@@ -1,0 +1,3 @@
+[submodule "fretboard"]
+	path = fretboard
+	url = git@github.com:fmodica/fretboard.git
