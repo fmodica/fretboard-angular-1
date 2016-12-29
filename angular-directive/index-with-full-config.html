@@ -15,16 +15,17 @@
 </head>
 
 <body ng-app="myApp">
-   
-<div class="container" ng-controller="MyController">
-    <script type="text/javascript">
+
+    <div class="container" ng-controller="MyController">
+        <script type="text/javascript">
             var app = angular.module("myApp", ['angularFretboard']);
 
             app.controller("MyController", ["$scope",
                 function ($scope) {
                     var isChordMode = true;
                     var isDisabled = false;
-                    var eightStringTuning = [{
+                    var allNoteLetters = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"];
+                    var standardTuning = [{
                         letter: "E",
                         octave: 4
                     }, {
@@ -42,15 +43,61 @@
                     }, {
                         letter: "E",
                         octave: 2
-                    }, {
-                        letter: "B",
-                        octave: 1
-                    }, {
-                        letter: "F#/Gb",
-                        octave: 1
                     }];
-                    var standardTuning = $.extend(true, [], eightStringTuning).slice(0, 6);
                     var numFrets = 16;
+                    var dimensionsFunc = function ($fretboardContainer, $fretboardBody, settings) {
+                        var width = $(window).width();
+                        var height;
+
+                        if (width <= 768) {
+                            height = settings.tuning.length * 26;
+                        } else {
+                            height = settings.tuning.length * 32;
+                        }
+
+                        return {
+                            height: height
+                        };
+                    };
+                    var noteCircles = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
+                    var intervalSettings = {
+                        intervals: ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'],
+                        root: "C"
+                    };
+                    var animationSpeed = 400; // ms
+                    var noteMode = 'letter'; // or 'interval'
+                    var clickedNotesChangedFuncs = [function () {
+                        console.log($scope.config.clickedNotes);
+                    }, function () {
+                        console.log("Another clicked notes callback...");
+                    }];
+
+                    $scope.config = {
+                        tuning: standardTuning,
+                        numFrets: numFrets,
+                        isChordMode: isChordMode,
+                        noteClickingDisabled: isDisabled,
+                        allNoteLetters: allNoteLetters,
+                        noteMode: noteMode,
+                        intervalSettings: intervalSettings,
+                        animationSpeed: animationSpeed,
+                        noteCircles: noteCircles,
+                        dimensionsFunc: dimensionsFunc,
+                        notesClickedCallbacks: clickedNotesChangedFuncs
+                    };
+
+                    var eightStringTuning = $.extend(true, [], standardTuning);
+
+                    eightStringTuning.push(
+                        {
+                            letter: "B",
+                            octave: 1
+                        }, {
+                            letter: "F#/Gb",
+                            octave: 1
+                        }
+                    );
+
                     var cMaj7Notes = [{
                         string: {
                             letter: "E",
@@ -92,48 +139,6 @@
                             cssClass: "red"
                         }]
                     }];
-                    var dimensionsFunc = function ($fretboardContainer, $fretboardBody, settings) {
-                        var width = $(window).width();
-                        var height;
-
-                        if (width <= 768) {
-                            height = settings.tuning.length * 26;
-                        } else {
-                            height = settings.tuning.length * 32;
-                        }
-
-                        return {
-                            height: height
-                        };
-                    };
-                    var noteCircles = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
-                    var intervalSettings = {
-                        intervals: ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'],
-                        root: "C"
-                    };
-                    var noteMode = 'letter'; // or 'interval',
-                    var isIntervalMode = noteMode === 'interval';
-                    var clickedNotesChangedFuncs = [function () {
-                        console.log("Clicked notes are: ");
-                        console.log($scope.config.clickedNotes);
-                    }, function () {
-                        console.log("Another clicked notes callback...");
-                    }];
-                    var options = {
-                        tuning: standardTuning,
-                        numFrets: numFrets,
-                        isChordMode: isChordMode,
-                        noteClickingDisabled: isDisabled,
-                        allNoteLetters: ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"],
-                        noteMode: noteMode,
-                        intervalSettings: intervalSettings,
-                        animationSpeed: 400, // ms
-                        noteCircles: noteCircles,
-                        dimensionsFunc: dimensionsFunc,
-                        notesClickedCallbacks: clickedNotesChangedFuncs
-                    };
-
-                    $scope.config = options;
 
                     $scope.toggleChordMode = function () {
                         $scope.config.isChordMode = !$scope.config.isChordMode;
@@ -197,8 +202,8 @@
                     };
 
                     $scope.toggleNoteMode = function () {
-                        isIntervalMode = !isIntervalMode;
-                        $scope.config.noteMode = isIntervalMode ? 'interval' : 'letter';
+                        $scope.config.noteMode = $scope.config.noteMode === 'interval' ? 'letter' : 'interval';
+
                         if (!$scope.config.clickedNotes.length) {
                             $scope.config.clickedNotes = $.extend(true, [], cMaj7Notes);
                         }
@@ -209,13 +214,13 @@
                         intervalSettings.root = intervalSettings.root === "C" ? "G" : "C";
                         $scope.config.intervalSettings = intervalSettings;
                         $scope.config.noteMode = 'interval';
-                        isIntervalMode = true;
+
                         if (!$scope.config.clickedNotes.length) {
                             $scope.config.clickedNotes = $.extend(true, [], cMaj7Notes);
                         }
                     };
 
-                    $scope.toggleNoteCircles = function() {
+                    $scope.toggleNoteCircles = function () {
                         if ($scope.config.noteCircles.length) {
                             $scope.config.noteCircles = [];
                         } else {
