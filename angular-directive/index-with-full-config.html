@@ -214,6 +214,14 @@
                             $scope.config.clickedNotes = $.extend(true, [], cMaj7Notes);
                         }
                     };
+
+                    $scope.toggleNoteCircles = function() {
+                        if ($scope.config.noteCircles.length) {
+                            $scope.config.noteCircles = [];
+                        } else {
+                            $scope.config.noteCircles = angular.copy(noteCircles);
+                        }
+                    };
                 }
             ]);
         </script>
@@ -240,6 +248,7 @@
 <button ng-click="toggleChordMode()">Toggle chord/scale mode</button>
 <button ng-click="toggleNoteMode()">Toggle note/interval mode </button>
 <button ng-click="toggleIntervalSettings()">Toggle root interval (C/G)</button>
+<button ng-click="toggleNoteCircles()">Add/remove note circles</button>
 
 <div class="json">
     <p>Config data-binding</p>

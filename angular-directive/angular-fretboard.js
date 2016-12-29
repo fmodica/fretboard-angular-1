@@ -341,11 +341,15 @@
                 var ngModelCtrl = ctrls[0];
                 var fretboardCtrl = ctrls[1];
 
-                dataBindingHelper.bind(ngModelCtrl, getFn);
+                dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
                     return fretboardCtrl.jQueryFretboardApi.getNoteCircles();
-                };
+                }
+
+                function setFn($viewValue) {
+                    fretboardCtrl.jQueryFretboardApi.setNoteCircles($viewValue);
+                }
             }
         };
     }
