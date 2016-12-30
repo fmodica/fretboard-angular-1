@@ -102,31 +102,19 @@
         function fretboardController($scope, $element) {
             var ctrl = $scope.ctrl = this;
 
-            $scope.$on("$destroy", destroy);
-
-            $scope.$watch(configWatch, onConfigChange);
+            if ($scope.config) {
+                initialize();
+            } else {
+                throw new Error("The \"config\" object is not defined. Place it on your scope and pass it into the fretboard directive.")
+            }
 
             function configWatch() {
                 return $scope.config;
             }
 
-            function onConfigChange(newVal, oldVal) {
-                if (newVal) {
-                    initialize();
-                } else {
-                    handleUndefinedConfig(oldVal)
-                }
-            }
-
-            function handleUndefinedConfig(oldConfig) {
-                if (isUndefinedOrNull(oldConfig)) {
-                    throw new Error("The \"config\" object is not defined. Place it on your scope and pass it into the fretboard directive.")
-                }
-
-                destroy();
-            }
-
             function initialize() {
+                $scope.$on("$destroy", destroy);
+
                 // When a user clicks a note, we need to ensure that the clicked notes on the
                 // parent scope are updated before the clicked note callbacks are invoked. So
                 // we delete the clicked note callbacks from the config here so the plugin
