@@ -4,7 +4,7 @@ An Angular-1 directive which wraps the <a href="https://github.com/fmodica/fretb
 
 ## Demo
 
-Check out the <a href="http://frank-modica.com/static/fretboarddemo/angular-directive/index-with-full-config.html">demo fretboard (default styles)</a>, which shows the fretboard and the config updated in real time. Here is the same fretboard styled with a <a href="http://frank-modica.com/static/fretboarddemo/angular-directive/index-with-full-config-dark-theme.html" target="_blank">dark theme</a> using CSS.
+Check out the <a href="http://frank-modica.com/static/fretboarddemo/angular-1/index-with-full-config.html">demo fretboard (default styles)</a>, which shows the fretboard and the config updated in real time. Here is the same fretboard styled with a <a href="http://frank-modica.com/static/fretboarddemo/angular-1/index-with-full-config-dark-theme.html" target="_blank">dark theme</a> using CSS.
 
 ## Setup
 
@@ -54,3 +54,7 @@ You can also check out my <a target="_blank" href="http://frank-modica.com/#/voi
 
 ## Tests
 Unit tests for can be run using the <a href="https://github.com/fmodica/fretboard-angular-1/tree/master/tests">Spec Runner</a>.
+
+## AngularJS 2 Component
+
+If you are using Angular 2, the fretboard is also wrapped as an <a href="https://github.com/fmodica/fretboard-angular-2">Angular 2 component</a>.
