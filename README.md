@@ -48,13 +48,13 @@ Learn more about <a target="_blank" href="https://github.com/fmodica/fretboard-a
 
 <a href="https://github.com/fmodica/fretboard-angular-1/blob/master/angular-directive/index-with-full-config.html">AngularJS directive (using all config options + API)</a>
 
-## Extra
-
-You can also check out my <a target="_blank" href="http://frank-modica.com/#/voiceleader/index">Guitar Voiceleading Helper</a>, where I use the fretboard to help users create progressions with good voice leading.
-
 ## Tests
 Unit tests for can be run using the <a href="https://github.com/fmodica/fretboard-angular-1/tree/master/tests">Spec Runner</a>.
 
 ## AngularJS 2 Component
 
 If you are using Angular 2, the fretboard is also wrapped as an <a href="https://github.com/fmodica/fretboard-angular-2">Angular 2 component</a>.
+
+## Extra
+
+You can also check out my <a target="_blank" href="http://frank-modica.com/#/voiceleader/index">Guitar Voiceleading Helper</a>, where I use the fretboard to help users create progressions with good voice leading.
