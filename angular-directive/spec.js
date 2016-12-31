@@ -164,6 +164,20 @@ describe("Angular fretboard directive", function () {
         }]
     }];
 
+    var customTuning = defaultTuning.slice(0, defaultTuning.length - 1);
+    var customNumFrets = defaultNumFrets - 1;
+    var customIsChordMode = !defaultIsChordMode;
+    var customNoteClickingDisabled = !defaultNoteClickingDisabled;
+    var customAllNoteLetters = angular.copy(defaultAllNoteLetters);
+    customAllNoteLetters[0] = "New letter"
+    var customNoteMode = "letter";
+    var customIntervalSettings = angular.copy(defaultIntervalSettings);
+    customIntervalSettings.root = "F";
+    var customAnimationSpeed = 0;
+    var customNoteCircles = defaultNoteCircles.slice(0, defaultNoteCircles.length - 1);
+    var customDimensionsFunc = function () { return {}; };
+    var customNotesClickedCallbacks = [function () { }, function () { }];
+
     beforeEach(angular.mock.module('angularFretboard'));
 
     beforeEach(inject(function (_$compile_, _$rootScope_) {
@@ -198,18 +212,7 @@ describe("Angular fretboard directive", function () {
             verifyAllNotesOnFretboard($rootScope.config.allNotes, defaultTuning, defaultNumFrets, defaultAllNoteLetters);
         });
 
-        it("should not overwrite the controller's initial defined config properties, but should update the clicked notes with additional information", function () {
-            var customTuning = defaultTuning.slice(0, defaultTuning.length - 1);
-            var customNumFrets = defaultNumFrets - 1;
-            var customIsChordMode = !defaultIsChordMode;
-            var customNoteClickingDisabled = !defaultNoteClickingDisabled;
-            var customAllNoteLetters = angular.copy(defaultAllNoteLetters);
-            customAllNoteLetters[0] = "New letter"
-            var customNoteMode = "letter";
-            var customIntervalSettings = angular.copy(defaultIntervalSettings);
-            customIntervalSettings.root = "F";
-            var customAnimationSpeed = 0;
-            var customNoteCircles = defaultNoteCircles.slice(0, defaultNoteCircles.length - 1);
+        it("should not overwrite the controller's initial defined config properties, but should update the initial clickedNotes on the config with additional information", function () {
             var customClickedNotes = [{
                 string: {
                     letter: "E",
@@ -221,8 +224,6 @@ describe("Angular fretboard directive", function () {
                     }
                 ]
             }];
-            var customDimensionsFunc = function () { return {}; };
-            var customNotesClickedCallbacks = [function () { }, function () { }];
 
             var customConfig = {
                 tuning: customTuning,
@@ -276,34 +277,36 @@ describe("Angular fretboard directive", function () {
             verifyAllNotesOnFretboard($rootScope.config.allNotes, customTuning, customNumFrets, customAllNoteLetters);
         });
 
-        it("should change the tuning, number of frets, and interval settings before updating clicked notes and all note letters", function () {
+        it("should change the tuning, numFrets, and intervalSettings before updating existing clickedNotes and allNotes on the config", function () {
             var bFlatMaj7ChordForStandardATuningCopy = angular.copy(bFlatMaj7ChordForStandardATuning);
             var customNumFrets = 3;
+            var customIntervalSettings = angular.copy(defaultIntervalSettings);
+            customIntervalSettings.root = "C#/Db";
+            customIntervalSettings.intervals[4] = "Major third";;
 
-            // Just the notes at or below the 3rd fret.
-            var expectedBFlatMaj7ChordFromFretboardForStandardATuning = [
+            var expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret = [
                 bFlatMaj7ChordForStandardATuningCopy[0],
                 bFlatMaj7ChordForStandardATuningCopy[4],
                 bFlatMaj7ChordForStandardATuningCopy[5]
             ];
 
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[0].notes[0].letter = "F";
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[0].notes[0].octave = 4;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[0].notes[0].intervalInfo = {
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].letter = "F";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].octave = 4;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].intervalInfo = {
                 root: "C#/Db",
                 interval: "Major third"
             };
 
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[1].notes[0].letter = "A#/Bb";
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[1].notes[0].octave = 2;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[1].notes[0].intervalInfo = {
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].letter = "A#/Bb";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].octave = 2;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].intervalInfo = {
                 root: "C#/Db",
                 interval: "6"
             };
 
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[2].notes[0].letter = "F";
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[2].notes[0].octave = 2;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuning[2].notes[0].intervalInfo = {
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].letter = "F";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].octave = 2;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].intervalInfo = {
                 root: "C#/Db",
                 interval: "Major third"
             };
@@ -315,16 +318,105 @@ describe("Angular fretboard directive", function () {
             $compile($element)($rootScope);
             $rootScope.$digest();
 
+            // Things that can affect clickedNotes.
             $rootScope.config.tuning = standardATuning;
             $rootScope.config.numFrets = customNumFrets;
-            $rootScope.config.intervalSettings = angular.copy(defaultIntervalSettings);
-            $rootScope.config.intervalSettings.root = "C#/Db";
-            $rootScope.config.intervalSettings.intervals[4] = "Major third"
+            $rootScope.config.intervalSettings = customIntervalSettings;
+
+            $rootScope.config.isChordMode = customIsChordMode;
+            $rootScope.config.noteClickingDisabled = customNoteClickingDisabled;
+            $rootScope.config.allNoteLetters = customAllNoteLetters;
+            $rootScope.config.noteMode = customNoteMode;
+            $rootScope.config.animationSpeed = customAnimationSpeed;
+            $rootScope.config.noteCircles = customNoteCircles;
+            $rootScope.config.dimensionsFunc = customDimensionsFunc;
+            $rootScope.config.notesClickedCallbacks = customNotesClickedCallbacks;
 
             $rootScope.$digest();
 
-            expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuning);
+            expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret);
+            expect($rootScope.config.tuning).toEqual(standardATuning);
+            expect($rootScope.config.numFrets).toEqual(customNumFrets);
+            expect($rootScope.config.intervalSettings).toEqual(customIntervalSettings);
+
+            expect($rootScope.config.isChordMode).toEqual(customIsChordMode);
+            expect($rootScope.config.noteClickingDisabled).toEqual(customNoteClickingDisabled);
+            expect($rootScope.config.allNoteLetters).toEqual(customAllNoteLetters);
+            expect($rootScope.config.noteMode).toEqual(customNoteMode);
+            expect($rootScope.config.animationSpeed).toEqual(customAnimationSpeed);
+            expect($rootScope.config.noteCircles).toEqual(customNoteCircles);
+            expect($rootScope.config.dimensionsFunc).toEqual(customDimensionsFunc);
+            expect($rootScope.config.notesClickedCallbacks).toEqual(customNotesClickedCallbacks);
             verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, customNumFrets, defaultAllNoteLetters);
+        });
+
+        it("should change the tuning, numFrets, intervalSettings, and then clicked notes, before updating clickedNotes and allNotes on the config", function () {
+            var cMaj7ChordForStandardTuningCopy = angular.copy(cMaj7ChordForStandardTuning);
+            var bFlatMaj7ChordForStandardATuningCopy = angular.copy(bFlatMaj7ChordForStandardATuning);
+            var customNumFrets = 3;
+            var customIntervalSettings = angular.copy(defaultIntervalSettings);
+            customIntervalSettings.root = "C#/Db";
+            customIntervalSettings.intervals[4] = "Major third";;
+
+            var cMaj7ChordForStandardTuningAtOrBelow3rdFret = [
+                cMaj7ChordForStandardTuningCopy[0],
+                cMaj7ChordForStandardTuningCopy[4],
+                cMaj7ChordForStandardTuningCopy[5]
+            ];
+
+            var bFlatMaj7ChordForStandardATuningAtOrBelow4thFret = [
+                bFlatMaj7ChordForStandardATuningCopy[0],
+                bFlatMaj7ChordForStandardATuningCopy[2],
+                bFlatMaj7ChordForStandardATuningCopy[4],
+                bFlatMaj7ChordForStandardATuningCopy[5]
+            ];
+
+            var expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret = angular.copy(bFlatMaj7ChordForStandardATuningAtOrBelow4thFret);
+
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].letter = "F";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].octave = 4;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].intervalInfo = {
+                root: "C#/Db",
+                interval: "Major third"
+            };
+
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].letter = "A";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].octave = 3;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].intervalInfo = {
+                root: "C#/Db",
+                interval: "b6"
+            };
+
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].letter = "A#/Bb";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].octave = 2;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].intervalInfo = {
+                root: "C#/Db",
+                interval: "6"
+            };
+
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].letter = "F";
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].octave = 2;
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].intervalInfo = {
+                root: "C#/Db",
+                interval: "Major third"
+            };
+
+            $rootScope.config = {
+                numFrets: customNumFrets,
+                clickedNotes: cMaj7ChordForStandardTuningAtOrBelow3rdFret
+            };
+
+            $compile($element)($rootScope);
+            $rootScope.$digest();
+
+            $rootScope.config.clickedNotes = bFlatMaj7ChordForStandardATuningAtOrBelow4thFret;
+            $rootScope.config.tuning = standardATuning;
+            $rootScope.config.numFrets = customNumFrets + 1;
+            $rootScope.config.intervalSettings = customIntervalSettings;
+
+            $rootScope.$digest();
+
+            expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret);
         });
     });
 
