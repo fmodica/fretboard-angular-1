@@ -9,7 +9,7 @@
         .directive("noteClickingDisabled", ["dataBindingHelper", noteClickingDisabled])
         .directive("noteMode", ["dataBindingHelper", noteMode])
         .directive("intervalSettings", ["dataBindingHelper", intervalSettings])
-        .directive("allNoteLetters", ["dataBindingHelper", allNoteLetters])
+        .directive("noteLetters", ["dataBindingHelper", noteLetters])
         .directive("animationSpeed", ["dataBindingHelper", animationSpeed])
         .directive("noteCircles", ["dataBindingHelper", noteCircles])
         .directive("dimensionsFunc", ["dataBindingHelper", dimensionsFunc])
@@ -88,7 +88,7 @@
             "<span ng-if='config' note-clicking-disabled ng-model='config.noteClickingDisabled'></span>" +
             "<span ng-if='config' note-mode ng-model='config.noteMode'></span>" +
             "<span ng-if='config' interval-settings ng-model='config.intervalSettings'></span>" +
-            "<span ng-if='config' all-note-letters ng-model='config.allNoteLetters'></span>" +
+            "<span ng-if='config' note-letters ng-model='config.noteLetters'></span>" +
             "<span ng-if='config' animation-speed ng-model='config.animationSpeed'></span>" +
             "<span ng-if='config' note-circles ng-model='config.noteCircles'></span>" +
             "<span ng-if='config' dimensions-func ng-model='config.dimensionsFunc'></span>" +
@@ -304,7 +304,7 @@
         };
     }
 
-    function allNoteLetters(dataBindingHelper) {
+    function noteLetters(dataBindingHelper) {
         return {
             restrict: "AE",
             require: ["ngModel", "^fretboard"],
@@ -315,7 +315,7 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getAllNoteLetters();
+                    return fretboardCtrl.jQueryFretboardApi.getNoteLetters();
                 }
             }
         };

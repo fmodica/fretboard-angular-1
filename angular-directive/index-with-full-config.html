@@ -24,7 +24,7 @@
                 function ($scope) {
                     var isChordMode = true;
                     var isDisabled = false;
-                    var allNoteLetters = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"];
+                    var noteLetters = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"];
                     var standardTuning = [{
                         letter: "E",
                         octave: 4
@@ -77,7 +77,7 @@
                         numFrets: numFrets,
                         isChordMode: isChordMode,
                         noteClickingDisabled: isDisabled,
-                        allNoteLetters: allNoteLetters,
+                        noteLetters: noteLetters,
                         noteMode: noteMode,
                         intervalSettings: intervalSettings,
                         animationSpeed: animationSpeed,

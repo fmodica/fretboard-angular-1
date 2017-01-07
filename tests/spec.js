@@ -30,7 +30,7 @@ describe("Angular fretboard directive", function () {
     var defaultNumFrets = 15;
     var defaultIsChordMode = true;
     var defaultNoteClickingDisabled = false;
-    var defaultAllNoteLetters = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"];
+    var defaultNoteLetters = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"];
     var defaultNoteMode = "letter";
     var defaultIntervalSettings = {
         intervals: ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"],
@@ -172,8 +172,8 @@ describe("Angular fretboard directive", function () {
     var customNumFrets = defaultNumFrets - 1;
     var customIsChordMode = !defaultIsChordMode;
     var customNoteClickingDisabled = !defaultNoteClickingDisabled;
-    var customAllNoteLetters = angular.copy(defaultAllNoteLetters);
-    customAllNoteLetters[0] = "New letter"
+    var customNoteLetters = angular.copy(defaultNoteLetters);
+    customNoteLetters[0] = "New letter"
     var customNoteMode = "letter";
     var customIntervalSettings = angular.copy(defaultIntervalSettings);
     customIntervalSettings.root = "F";
@@ -231,7 +231,7 @@ describe("Angular fretboard directive", function () {
             expect($rootScope.config.numFrets).toEqual(defaultNumFrets);
             expect($rootScope.config.isChordMode).toEqual(defaultIsChordMode);
             expect($rootScope.config.noteClickingDisabled).toEqual(defaultNoteClickingDisabled);
-            expect($rootScope.config.allNoteLetters).toEqual(defaultAllNoteLetters);
+            expect($rootScope.config.noteLetters).toEqual(defaultNoteLetters);
             expect($rootScope.config.noteMode).toEqual(defaultNoteMode);
             expect($rootScope.config.intervalSettings).toEqual(defaultIntervalSettings);
             expect($rootScope.config.animationSpeed).toEqual(defaultAnimationSpeed);
@@ -239,7 +239,7 @@ describe("Angular fretboard directive", function () {
             expect($rootScope.config.clickedNotes).toEqual(defaultClickedNotes);
             expect(typeof $rootScope.config.dimensionsFunc).toEqual("function");
             expect($rootScope.config.notesClickedCallbacks).toEqual(defaultNotesClickedCallbacks);
-            verifyAllNotesOnFretboard($rootScope.config.allNotes, defaultTuning, defaultNumFrets, defaultAllNoteLetters);
+            verifyAllNotesOnFretboard($rootScope.config.allNotes, defaultTuning, defaultNumFrets, defaultNoteLetters);
         });
 
         it("should not overwrite the controller's initial defined config properties, but should update the initial clickedNotes on the config with additional information from the plugin before invoking the notesClickedCallbacks", function () {
@@ -262,7 +262,7 @@ describe("Angular fretboard directive", function () {
                 numFrets: customNumFrets,
                 isChordMode: customIsChordMode,
                 noteClickingDisabled: customNoteClickingDisabled,
-                allNoteLetters: customAllNoteLetters,
+                noteLetters: customNoteLetters,
                 noteMode: customNoteMode,
                 intervalSettings: customIntervalSettings,
                 animationSpeed: customAnimationSpeed,
@@ -281,7 +281,7 @@ describe("Angular fretboard directive", function () {
             expect($rootScope.config.numFrets).toEqual(customNumFrets);
             expect($rootScope.config.isChordMode).toEqual(customIsChordMode);
             expect($rootScope.config.noteClickingDisabled).toEqual(customNoteClickingDisabled);
-            expect($rootScope.config.allNoteLetters).toEqual(customAllNoteLetters);
+            expect($rootScope.config.noteLetters).toEqual(customNoteLetters);
             expect($rootScope.config.noteMode).toEqual(customNoteMode);
             expect($rootScope.config.intervalSettings).toEqual(customIntervalSettings);
             expect($rootScope.config.animationSpeed).toEqual(customAnimationSpeed);
@@ -292,7 +292,7 @@ describe("Angular fretboard directive", function () {
             expect(tempObj.func2).toHaveBeenCalled();
             expect(clickedNotesDuringCallbacks).toEqual(expectedCustomClickedNoteForStandardTuning);
             expect($rootScope.config.clickedNotes).toEqual(expectedCustomClickedNoteForStandardTuning);
-            verifyAllNotesOnFretboard($rootScope.config.allNotes, customTuning, customNumFrets, customAllNoteLetters);
+            verifyAllNotesOnFretboard($rootScope.config.allNotes, customTuning, customNumFrets, customNoteLetters);
         });
 
         it("should change the tuning, numFrets, and intervalSettings in the plugin, before updating existing clickedNotes and allNotes on the config and invoking the notesClickedCallbacks, while not changing all other config properties", function () {
@@ -359,7 +359,7 @@ describe("Angular fretboard directive", function () {
 
             $rootScope.config.isChordMode = customIsChordMode;
             $rootScope.config.noteClickingDisabled = customNoteClickingDisabled;
-            $rootScope.config.allNoteLetters = customAllNoteLetters;
+            $rootScope.config.noteLetters = customNoteLetters;
             $rootScope.config.noteMode = customNoteMode;
             $rootScope.config.animationSpeed = customAnimationSpeed;
             $rootScope.config.noteCircles = customNoteCircles;
@@ -378,12 +378,12 @@ describe("Angular fretboard directive", function () {
 
             expect($rootScope.config.isChordMode).toEqual(customIsChordMode);
             expect($rootScope.config.noteClickingDisabled).toEqual(customNoteClickingDisabled);
-            expect($rootScope.config.allNoteLetters).toEqual(customAllNoteLetters);
+            expect($rootScope.config.noteLetters).toEqual(customNoteLetters);
             expect($rootScope.config.noteMode).toEqual(customNoteMode);
             expect($rootScope.config.animationSpeed).toEqual(customAnimationSpeed);
             expect($rootScope.config.noteCircles).toEqual(customNoteCircles);
             expect($rootScope.config.dimensionsFunc).toEqual(customDimensionsFunc);
-            verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, customNumFrets, defaultAllNoteLetters);
+            verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, customNumFrets, defaultNoteLetters);
         });
 
         it("should change the tuning, numFrets, intervalSettings, and then clicked notes in the plugin, before updating clickedNotes and allNotes on the config and invoking the notesClickedCallbacks", function () {
@@ -473,26 +473,26 @@ describe("Angular fretboard directive", function () {
             expect(tempObj.func2).toHaveBeenCalled();
             expect(clickedNotesDuringCallbacks).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret);
             expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret);
-            verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, newNumFrets, defaultAllNoteLetters);
+            verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, newNumFrets, defaultNoteLetters);
         });
     });
 
     // It would be best to create each note by hand for verification, but this should do for now.
-    function verifyAllNotesOnFretboard(allNotesToVerify, tuning, numFrets, allNoteLetters) {
+    function verifyAllNotesOnFretboard(allNotesToVerify, tuning, numFrets, noteLetters) {
         expect(allNotesToVerify.length).toEqual(tuning.length);
 
         for (var i = 0; i < allNotesToVerify.length; i++) {
             expect(allNotesToVerify[i].notes.length).toEqual(numFrets + 1);
-            verifyNotesOnString(allNotesToVerify[i], tuning[i], allNoteLetters);
+            verifyNotesOnString(allNotesToVerify[i], tuning[i], noteLetters);
         }
     }
 
-    function verifyNotesOnString(stringToVerify, tuningNote, allNoteLetters) {
+    function verifyNotesOnString(stringToVerify, tuningNote, noteLetters) {
         expect(stringToVerify.string).toEqual(tuningNote);
 
         for (var i = 0; i < stringToVerify.notes.length; i++) {
             var currentNote = stringToVerify.notes[i];
-            var currentNoteLetterIndex = allNoteLetters.indexOf(currentNote.letter);
+            var currentNoteLetterIndex = noteLetters.indexOf(currentNote.letter);
 
             expect(currentNote.fret).toEqual(i);
 
@@ -502,7 +502,7 @@ describe("Angular fretboard directive", function () {
                 expect(currentNoteLetterIndex).not.toEqual(-1);
             } else {
                 var lastNote = stringToVerify.notes[i - 1];
-                var lastNoteIndex = allNoteLetters.indexOf(lastNote.letter);
+                var lastNoteIndex = noteLetters.indexOf(lastNote.letter);
 
                 expect(currentNoteLetterIndex).toEqual(lastNoteIndex === 11 ? 0 : lastNoteIndex + 1);
                 expect(currentNote.octave).toEqual(lastNoteIndex === 11 ? lastNote.octave + 1 : lastNote.octave);
