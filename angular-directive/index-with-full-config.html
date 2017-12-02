@@ -12,6 +12,7 @@
 
     <link rel="stylesheet" type="text/css" href="../fretboard/jquery-plugin/styles.css">
     <link rel="stylesheet" type="text/css" href="../fretboard/jquery-plugin/demo-styles.css">
+    <link rel="stylesheet" type="text/css" href="./styles.css">
 </head>
 
 <body ng-app="myApp">
@@ -60,17 +61,13 @@
                         };
                     };
                     var noteCircles = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
-                    var intervalSettings = {
-                        intervals: ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'],
-                        root: "C"
-                    };
+                    var intervals = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', 'b6', '6', 'b7', '7'];
+                    var root = noteLetters[0];
                     var animationSpeed = 400; // ms
                     var noteMode = 'letter'; // or 'interval'
-                    var clickedNotesChangedFuncs = [function () {
+                    var clickedNotesChangedFunc = function () {
                         console.log($scope.config.clickedNotes);
-                    }, function () {
-                        console.log("Another clicked notes callback...");
-                    }];
+                    };
 
                     $scope.config = {
                         tuning: standardTuning,
@@ -79,11 +76,12 @@
                         noteClickingDisabled: isDisabled,
                         noteLetters: noteLetters,
                         noteMode: noteMode,
-                        intervalSettings: intervalSettings,
+                        intervals: intervals,
+                        root: root,
                         animationSpeed: animationSpeed,
                         noteCircles: noteCircles,
                         dimensionsFunc: dimensionsFunc,
-                        notesClickedCallbacks: clickedNotesChangedFuncs
+                        notesClickedCallback: clickedNotesChangedFunc
                     };
 
                     var eightStringTuning = $.extend(true, [], standardTuning);
@@ -209,57 +207,46 @@
                         }
                     };
 
-                    $scope.toggleIntervalSettings = function () {
-                        intervalSettings = $.extend(true, {}, intervalSettings);
-                        intervalSettings.root = intervalSettings.root === "C" ? "G" : "C";
-                        $scope.config.intervalSettings = intervalSettings;
-                        $scope.config.noteMode = 'interval';
+                    $scope.toggleRootForIntervalMode = function () {
+                        $scope.config.noteMode = "interval";
+                        $scope.config.root = $scope.config.root === "C" ? "G" : "C";
 
                         if (!$scope.config.clickedNotes.length) {
-                            $scope.config.clickedNotes = $.extend(true, [], cMaj7Notes);
-                        }
-                    };
-
-                    $scope.toggleNoteCircles = function () {
-                        if ($scope.config.noteCircles.length) {
-                            $scope.config.noteCircles = [];
-                        } else {
-                            $scope.config.noteCircles = angular.copy(noteCircles);
+                            $scope.config.clickedNotes = cMaj7Notes;
                         }
                     };
                 }
             ]);
         </script>
 
-<div ng-if='config' fretboard config='config'></div>
+        <fretboard ng-if='config' config='config'></fretboard>
 
-<p class="disclaimer disclaimer-first">
-    Below are some examples of things you can do with the fretboard.
-</p>
+        <p class="disclaimer disclaimer-first">
+            Below are some examples of things you can do with the fretboard.
+        </p>
 
-<button ng-click="setMaj7Chord()">Click chord</button>
-<!-- show-progression placeholder -->
-<!-- show-scale-run placeholder -->
-<!-- show-arpeggio placeholder -->
-<button ng-click="getClickedNotes()">Get clicked notes (console)</button>
-<button ng-click="unclick()">Unclick Notes</button>
-<button ng-click="toggleNoteClicking()">Disable/enable note clicking</button>
-<button ng-click="addString()">Add String</button>
-<button ng-click="removeString()">Remove String</button>
-<button ng-click="changeToEightStringTuning()">Set 8-string tuning</button>
-<button ng-click="changeToStandardTuning()">Set standard tuning</button>
-<button ng-click="addFret()">Add fret</button>
-<button ng-click="removeFret()">Remove fret</button>
-<button ng-click="toggleChordMode()">Toggle chord/scale mode</button>
-<button ng-click="toggleNoteMode()">Toggle note/interval mode </button>
-<button ng-click="toggleIntervalSettings()">Toggle root interval (C/G)</button>
-<button ng-click="toggleNoteCircles()">Add/remove note circles</button>
+        <button ng-click="setMaj7Chord()">Click chord</button>
+        <!-- show-progression placeholder -->
+        <!-- show-scale-run placeholder -->
+        <!-- show-arpeggio placeholder -->
+        <button ng-click="getClickedNotes()">Get clicked notes (console)</button>
+        <button ng-click="unclick()">Unclick Notes</button>
+        <button ng-click="toggleNoteClicking()">Disable/enable note clicking</button>
+        <button ng-click="addString()">Add String</button>
+        <button ng-click="removeString()">Remove String</button>
+        <button ng-click="changeToEightStringTuning()">Set 8-string tuning</button>
+        <button ng-click="changeToStandardTuning()">Set standard tuning</button>
+        <button ng-click="addFret()">Add fret</button>
+        <button ng-click="removeFret()">Remove fret</button>
+        <button ng-click="toggleChordMode()">Toggle chord/scale mode</button>
+        <button ng-click="toggleNoteMode()">Toggle note/interval mode </button>
+        <button ng-click="toggleRootForIntervalMode()">Toggle root interval (C/G)</button>
 
-<div class="json">
-    <p>Config data-binding</p>
-    <pre>{{ config | json }}</pre>
-</div>
-</div>
+        <div class="json">
+            <p>Config data-binding</p>
+            <pre>{{ config | json }}</pre>
+        </div>
+    </div>
 </body>
 
 </html>

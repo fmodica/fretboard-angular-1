@@ -32,14 +32,11 @@ describe("Angular fretboard directive", function () {
     var defaultNoteClickingDisabled = false;
     var defaultNoteLetters = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "Ab/G#", "A", "A#/Bb", "B"];
     var defaultNoteMode = "letter";
-    var defaultIntervalSettings = {
-        intervals: ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"],
-        root: defaultNoteLetters[0]
-    };
+    var defaultIntervals = ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"];
+    var defaultRoot = defaultNoteLetters[0];
     var defaultAnimationSpeed = 400;
     var defaultNoteCircles = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];
     var defaultClickedNotes = [];
-    var defaultNotesClickedCallbacks = [];
 
     var standardATuning = [{
         letter: "D",
@@ -175,12 +172,12 @@ describe("Angular fretboard directive", function () {
     var customNoteLetters = angular.copy(defaultNoteLetters);
     customNoteLetters[0] = "New letter"
     var customNoteMode = "letter";
-    var customIntervalSettings = angular.copy(defaultIntervalSettings);
-    customIntervalSettings.root = "F";
+    var customIntervals = angular.copy(defaultIntervals);
+    var customRoot = "F";
     var customAnimationSpeed = 0;
     var customNoteCircles = defaultNoteCircles.slice(0, defaultNoteCircles.length - 1);
     var customDimensionsFunc = function () { return {}; };
-    // customNotesClickedCallbacks are spies created in each test.
+    // customNotesClickedCallback is created in each test.
     var customClickedNoteForStandardTuning = [{
         string: {
             letter: "E",
@@ -211,7 +208,7 @@ describe("Angular fretboard directive", function () {
     beforeEach(angular.mock.module('angularFretboard'));
 
     beforeEach(inject(function (_$compile_, _$rootScope_) {
-        $element = angular.element("<div fretboard config='config'></div>");
+        $element = angular.element("<fretboard config='config'></fretboard>");
         $compile = _$compile_;
         $rootScope = _$rootScope_;
     }));
@@ -233,29 +230,21 @@ describe("Angular fretboard directive", function () {
             expect($rootScope.config.noteClickingDisabled).toEqual(defaultNoteClickingDisabled);
             expect($rootScope.config.noteLetters).toEqual(defaultNoteLetters);
             expect($rootScope.config.noteMode).toEqual(defaultNoteMode);
-            expect($rootScope.config.intervalSettings).toEqual(defaultIntervalSettings);
+            expect($rootScope.config.intervals).toEqual(defaultIntervals);
             expect($rootScope.config.animationSpeed).toEqual(defaultAnimationSpeed);
             expect($rootScope.config.noteCircles).toEqual(defaultNoteCircles);
             expect($rootScope.config.clickedNotes).toEqual(defaultClickedNotes);
             expect(typeof $rootScope.config.dimensionsFunc).toEqual("function");
-            expect($rootScope.config.notesClickedCallbacks).toEqual(defaultNotesClickedCallbacks);
+            expect($rootScope.config.notesClickedCallback).toBeUndefined();
             verifyAllNotesOnFretboard($rootScope.config.allNotes, defaultTuning, defaultNumFrets, defaultNoteLetters);
         });
 
-        it("should not overwrite the controller's initial defined config properties, but should update the initial clickedNotes on the config with additional information from the plugin before invoking the notesClickedCallbacks", function () {
-            var clickedNotesDuringCallbacks;
+        it("should not overwrite the controller's initial defined config properties, but should update the initial clickedNotes on the config with additional information from the plugin before invoking the notesClickedCallback", function () {
+            var clickedNotesDuringCallback;
 
-            var tempObj = {
-                func1: function () {
-                    clickedNotesDuringCallbacks = $rootScope.config.clickedNotes;
-                },
-                func2: function () { }
-            };
-
-            spyOn(tempObj, 'func1').and.callThrough();
-            spyOn(tempObj, 'func2').and.callThrough();
-
-            var customNotesClickedCallbackSpies = [tempObj.func1, tempObj.func2];
+            var customNotesClickedCallback = function () {
+                clickedNotesDuringCallback = $rootScope.config.clickedNotes;
+            }
 
             var customConfig = {
                 tuning: customTuning,
@@ -264,12 +253,13 @@ describe("Angular fretboard directive", function () {
                 noteClickingDisabled: customNoteClickingDisabled,
                 noteLetters: customNoteLetters,
                 noteMode: customNoteMode,
-                intervalSettings: customIntervalSettings,
+                intervals: customIntervals,
+                root: customRoot,
                 animationSpeed: customAnimationSpeed,
                 noteCircles: customNoteCircles,
                 clickedNotes: customClickedNoteForStandardTuning,
                 dimensionsFunc: customDimensionsFunc,
-                notesClickedCallbacks: customNotesClickedCallbackSpies
+                notesClickedCallback: customNotesClickedCallback
             };
 
             $rootScope.config = customConfig;
@@ -283,25 +273,27 @@ describe("Angular fretboard directive", function () {
             expect($rootScope.config.noteClickingDisabled).toEqual(customNoteClickingDisabled);
             expect($rootScope.config.noteLetters).toEqual(customNoteLetters);
             expect($rootScope.config.noteMode).toEqual(customNoteMode);
-            expect($rootScope.config.intervalSettings).toEqual(customIntervalSettings);
+            expect($rootScope.config.intervals).toEqual(customIntervals);
+            expect($rootScope.config.root).toEqual(customRoot);
             expect($rootScope.config.animationSpeed).toEqual(customAnimationSpeed);
             expect($rootScope.config.noteCircles).toEqual(customNoteCircles);
             expect($rootScope.config.dimensionsFunc).toEqual(customDimensionsFunc);
-            expect($rootScope.config.notesClickedCallbacks).toEqual(customNotesClickedCallbackSpies);
-            expect(tempObj.func1).toHaveBeenCalled();
-            expect(tempObj.func2).toHaveBeenCalled();
-            expect(clickedNotesDuringCallbacks).toEqual(expectedCustomClickedNoteForStandardTuning);
+            expect($rootScope.config.notesClickedCallback).toEqual(customNotesClickedCallback);
+            expect(clickedNotesDuringCallback).toEqual(expectedCustomClickedNoteForStandardTuning);
             expect($rootScope.config.clickedNotes).toEqual(expectedCustomClickedNoteForStandardTuning);
             verifyAllNotesOnFretboard($rootScope.config.allNotes, customTuning, customNumFrets, customNoteLetters);
         });
 
-        it("should change the tuning, numFrets, and intervalSettings in the plugin, before updating existing clickedNotes and allNotes on the config and invoking the notesClickedCallbacks, while not changing all other config properties", function () {
+        it("should change the tuning and numFrets in the plugin, before updating existing clickedNotes and allNotes on the config and invoking the notesClickedCallback, while not changing all other config properties", function () {
+            var clickedNotesDuringCallback;
+
+            var customNotesClickedCallback = function () {
+                clickedNotesDuringCallback = $rootScope.config.clickedNotes;
+            }
+
             var bFlatMaj7ChordForStandardATuningCopy = angular.copy(bFlatMaj7ChordForStandardATuning);
             var customNumFrets = 3;
-            var customIntervalSettings = angular.copy(defaultIntervalSettings);
-
-            customIntervalSettings.root = "C#/Db";
-            customIntervalSettings.intervals[4] = "Major third";;
+            var customRoot = "C#/Db";
 
             var expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret = [
                 bFlatMaj7ChordForStandardATuningCopy[0],
@@ -313,7 +305,7 @@ describe("Angular fretboard directive", function () {
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].octave = 4;
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].intervalInfo = {
                 root: "C#/Db",
-                interval: "Major third"
+                interval: "3"
             };
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].letter = "A#/Bb";
@@ -327,74 +319,54 @@ describe("Angular fretboard directive", function () {
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].octave = 2;
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].intervalInfo = {
                 root: "C#/Db",
-                interval: "Major third"
+                interval: "3"
             };
 
             $rootScope.config = {
-                clickedNotes: cMaj7ChordForStandardTuning
+                clickedNotes: cMaj7ChordForStandardTuning,
+                notesClickedCallback: customNotesClickedCallback
             };
 
             $compile($element)($rootScope);
             $rootScope.$digest();
 
-            var clickedNotesDuringCallbacks;
-
-            var tempObj = {
-                func1: function () {
-                    clickedNotesDuringCallbacks = $rootScope.config.clickedNotes;
-                },
-                func2: function () { }
-            };
-
-            spyOn(tempObj, 'func1').and.callThrough();
-            spyOn(tempObj, 'func2').and.callThrough();
-
-            var customNotesClickedCallbackSpies = [tempObj.func1, tempObj.func2];
-
             // Things that can affect clickedNotes.
             $rootScope.config.tuning = standardATuning;
             $rootScope.config.numFrets = customNumFrets;
-            $rootScope.config.intervalSettings = customIntervalSettings;
-            $rootScope.config.notesClickedCallbacks = customNotesClickedCallbackSpies;
+            $rootScope.config.root = customRoot;
 
             $rootScope.config.isChordMode = customIsChordMode;
             $rootScope.config.noteClickingDisabled = customNoteClickingDisabled;
             $rootScope.config.noteLetters = customNoteLetters;
             $rootScope.config.noteMode = customNoteMode;
-            $rootScope.config.animationSpeed = customAnimationSpeed;
-            $rootScope.config.noteCircles = customNoteCircles;
-            $rootScope.config.dimensionsFunc = customDimensionsFunc;
 
             $rootScope.$digest();
 
-            expect($rootScope.config.notesClickedCallbacks).toEqual(customNotesClickedCallbackSpies);
-            expect(tempObj.func1).toHaveBeenCalled();
-            expect(tempObj.func2).toHaveBeenCalled();
-            expect(clickedNotesDuringCallbacks).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret);
-            expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret);
             expect($rootScope.config.tuning).toEqual(standardATuning);
             expect($rootScope.config.numFrets).toEqual(customNumFrets);
-            expect($rootScope.config.intervalSettings).toEqual(customIntervalSettings);
+            expect($rootScope.config.root).toEqual(customRoot);
 
             expect($rootScope.config.isChordMode).toEqual(customIsChordMode);
             expect($rootScope.config.noteClickingDisabled).toEqual(customNoteClickingDisabled);
             expect($rootScope.config.noteLetters).toEqual(customNoteLetters);
             expect($rootScope.config.noteMode).toEqual(customNoteMode);
-            expect($rootScope.config.animationSpeed).toEqual(customAnimationSpeed);
-            expect($rootScope.config.noteCircles).toEqual(customNoteCircles);
-            expect($rootScope.config.dimensionsFunc).toEqual(customDimensionsFunc);
+            expect(clickedNotesDuringCallback).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret);
+            expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret);
             verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, customNumFrets, defaultNoteLetters);
         });
 
-        it("should change the tuning, numFrets, intervalSettings, and then clicked notes in the plugin, before updating clickedNotes and allNotes on the config and invoking the notesClickedCallbacks", function () {
+        it("should change the tuning, numFrets, and then clicked notes in the plugin, before updating clickedNotes and allNotes on the config and invoking the notesClickedCallback", function () {
+            var clickedNotesDuringCallback;
+
+            var customNotesClickedCallback = function () {
+                clickedNotesDuringCallback = $rootScope.config.clickedNotes;
+            }
+
             var cMaj7ChordForStandardTuningCopy = angular.copy(cMaj7ChordForStandardTuning);
             var bFlatMaj7ChordForStandardATuningCopy = angular.copy(bFlatMaj7ChordForStandardATuning);
             var originalNumFrets = 3;
             var newNumFrets = originalNumFrets + 1;
-            var customIntervalSettings = angular.copy(defaultIntervalSettings);
-
-            customIntervalSettings.root = "C#/Db";
-            customIntervalSettings.intervals[4] = "Major third";;
+            var customRoot = "C#/Db"
 
             var cMaj7ChordForStandardTuningAtOrBelow3rdFret = [
                 cMaj7ChordForStandardTuningCopy[0],
@@ -415,7 +387,7 @@ describe("Angular fretboard directive", function () {
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].octave = 4;
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].intervalInfo = {
                 root: "C#/Db",
-                interval: "Major third"
+                interval: "3"
             };
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].letter = "A";
@@ -436,42 +408,26 @@ describe("Angular fretboard directive", function () {
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].octave = 2;
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].intervalInfo = {
                 root: "C#/Db",
-                interval: "Major third"
+                interval: "3"
             };
 
             $rootScope.config = {
                 numFrets: originalNumFrets,
-                clickedNotes: cMaj7ChordForStandardTuningAtOrBelow3rdFret
+                clickedNotes: cMaj7ChordForStandardTuningAtOrBelow3rdFret,
+                notesClickedCallback: customNotesClickedCallback
             };
 
             $compile($element)($rootScope);
             $rootScope.$digest();
 
-            var clickedNotesDuringCallbacks;
-
-            var tempObj = {
-                func1: function () {
-                    clickedNotesDuringCallbacks = $rootScope.config.clickedNotes;
-                },
-                func2: function () { }
-            };
-
-            spyOn(tempObj, 'func1').and.callThrough();
-            spyOn(tempObj, 'func2').and.callThrough();
-
-            var customNotesClickedCallbackSpies = [tempObj.func1, tempObj.func2];
-
             $rootScope.config.clickedNotes = bFlatMaj7ChordForStandardATuningAtOrBelow4thFret;
             $rootScope.config.tuning = standardATuning;
             $rootScope.config.numFrets = newNumFrets;
-            $rootScope.config.intervalSettings = customIntervalSettings;
-            $rootScope.config.notesClickedCallbacks = customNotesClickedCallbackSpies;
+            $rootScope.config.root = customRoot;
 
             $rootScope.$digest();
 
-            expect(tempObj.func1).toHaveBeenCalled();
-            expect(tempObj.func2).toHaveBeenCalled();
-            expect(clickedNotesDuringCallbacks).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret);
+            expect(clickedNotesDuringCallback).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret);
             expect($rootScope.config.clickedNotes).toEqual(expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret);
             verifyAllNotesOnFretboard($rootScope.config.allNotes, standardATuning, newNumFrets, defaultNoteLetters);
         });
