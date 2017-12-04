@@ -197,10 +197,7 @@ describe("Angular fretboard directive", function () {
             letter: "F",
             octave: 4,
             fret: 1,
-            intervalInfo: {
-                root: "F",
-                interval: "1"
-            },
+            interval: "1"
             // TODO: bind cssClass
         }]
     }];
@@ -303,24 +300,15 @@ describe("Angular fretboard directive", function () {
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].letter = "F";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].octave = 4;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "3"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[0].notes[0].interval = "3";
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].letter = "A#/Bb";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].octave = 2;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "6"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[1].notes[0].interval = "6";
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].letter = "F";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].octave = 2;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "3"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow3rdFret[2].notes[0].interval = "3";
 
             $rootScope.config = {
                 clickedNotes: cMaj7ChordForStandardTuning,
@@ -385,31 +373,19 @@ describe("Angular fretboard directive", function () {
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].letter = "F";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].octave = 4;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "3"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[0].notes[0].interval = "3";
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].letter = "A";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].octave = 3;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "b6"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[1].notes[0].interval = "b6";
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].letter = "A#/Bb";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].octave = 2;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "6"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[2].notes[0].interval = "6";
 
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].letter = "F";
             expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].octave = 2;
-            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].intervalInfo = {
-                root: "C#/Db",
-                interval: "3"
-            };
+            expectedBFlatMaj7ChordFromFretboardForStandardATuningAtOrBelow4thFret[3].notes[0].interval = "3";
 
             $rootScope.config = {
                 numFrets: originalNumFrets,

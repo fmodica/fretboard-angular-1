@@ -9,7 +9,7 @@
         .directive('noteClickingDisabled', ['dataBindingHelper', noteClickingDisabled])
         .directive('noteMode', ['dataBindingHelper', noteMode])
         .directive('intervals', ['dataBindingHelper', intervals])
-        .directive('root', ['dataBindingHelper', root])
+        .directive('intervalRoot', ['dataBindingHelper', intervalRoot])
         .directive('noteLetters', ['dataBindingHelper', noteLetters])
         .directive('animationSpeed', ['dataBindingHelper', animationSpeed])
         .directive('noteCircles', ['dataBindingHelper', noteCircles])
@@ -18,7 +18,8 @@
         .directive('allNotes', ['dataBindingHelper', allNotes])
         .factory('dataBindingHelper', ['$rootScope', dataBindingHelper]);
 
-    // Data-binding has to be done carefully, so this service helps each directive:
+    // Data-binding has to be done carefully, so this service helps each directive with
+    // the following:
     //
     // - If a config value is undefined during init, we want to fill that in using
     //   info from the plugin (getFn).
@@ -33,7 +34,6 @@
     function dataBindingHelper($rootScope) {
         function bind(ngModelCtrl, getFn, setFn, renderOnInitIfDefined) {
             var isFirstRender = true;
-            var isScheduled = false;
 
             ngModelCtrl.$render = $render;
 
@@ -67,18 +67,7 @@
                 });
             }
 
-            function scheduleModelUpdate() {
-                if (isScheduled) return;
-
-                isScheduled = true;
-
-                $rootScope.$evalAsync(function () {
-                    ngModelCtrl.$setViewValue(getFn());
-                    isScheduled = false;
-                });
-            }
-
-            return { scheduleModelUpdate: scheduleModelUpdate };
+            return { updateModel: updateModel };
         }
 
         return { bind: bind };
@@ -98,7 +87,7 @@
                 '<note-clicking-disabled ng-if="config" ng-model="config.noteClickingDisabled"></note-clicking-disabled >' +
                 '<note-mode ng-if="config" ng-model="config.noteMode"></note-mode>' +
                 '<intervals ng-if="config" ng-model="config.intervals"></intervals>' +
-                '<root ng-if="config" ng-model="config.root"></root>' +
+                '<interval-root ng-if="config" ng-model="config.root"></interval-root>' +
                 '<note-letters ng-if="config" ng-model="config.noteLetters"></note-letters>' +
                 '<animation-speed ng-if="config" ng-model="config.animationSpeed"></animation-speed>' +
                 '<note-circles ng-if="config" ng-model="config.noteCircles"></note-circles>' +
@@ -114,21 +103,22 @@
                 throw new Error('The "config" object is not defined. Place it on your scope and pass it into the fretboard directive.');
             }
 
+            var updateClickedNotesModel;
+            var updateAllNotesModel;
+            var modelUpdateIsScheduled = false;
             var ctrl = $scope.ctrl = this;
-            var scheduleClickedNotesUpdate;
-            var scheduleAllNotesUpdate;
 
             $scope.$on('$destroy', destroy);
 
-            ctrl.registerClickedNotesModelUpdateFn = function (_scheduleClickedNotesUpdate) {
-                scheduleClickedNotesUpdate = _scheduleClickedNotesUpdate;
+            ctrl.registerClickedNotesModelUpdateFn = function (_updateClickedNotesModel) {
+                updateClickedNotesModel = _updateClickedNotesModel;
 
                 var configCopy = angular.copy($scope.config);
                 var originalNotesClickedCallback = configCopy.notesClickedCallback;
 
                 // The plugin gets a function which updates the model, so that can happen before
                 // the original callback is invoked.
-                configCopy.notesClickedCallback = scheduleClickedNotesUpdate;
+                configCopy.notesClickedCallback = updateClickedNotesModel;
 
                 // The original callback gets invoked with ng-change after clicked notes have been
                 // updated on the model. 
@@ -138,13 +128,20 @@
                 ctrl.jQueryFretboardApi = $element.data('api');
             };
 
-            ctrl.scheduleAllNotesModelUpdateFn = function (_scheduleAllNotesUpdate) {
-                scheduleAllNotesUpdate = _scheduleAllNotesUpdate;
+            ctrl.registerAllNotesModelUpdateFn = function (_updateAllNotesModel) {
+                updateAllNotesModel = _updateAllNotesModel;
             };
 
             ctrl.onNotesChanged = function () {
-                scheduleAllNotesUpdate();
-                scheduleClickedNotesUpdate();
+                if (modelUpdateIsScheduled) return;
+
+                modelUpdateIsScheduled = true;
+
+                $scope.$evalAsync(function () {
+                    updateAllNotesModel();
+                    updateClickedNotesModel();
+                    modelUpdateIsScheduled = false;
+                });
             }
 
             function destroy() {
@@ -280,7 +277,7 @@
         };
     }
 
-    function root(dataBindingHelper) {
+    function intervalRoot(dataBindingHelper) {
         return {
             restrict: 'E',
             require: ['ngModel', '^fretboard'],
@@ -378,11 +375,11 @@
                 var ngModelCtrl = ctrls[0];
                 var fretboardCtrl = ctrls[1];
 
-                var scheduleModelUpdate = fretboardCtrl.scheduleAllNotesUpdate = dataBindingHelper
+                var updateModel = dataBindingHelper
                     .bind(ngModelCtrl, getFn)
-                    .scheduleModelUpdate;
+                    .updateModel;
 
-                fretboardCtrl.scheduleAllNotesModelUpdateFn(scheduleModelUpdate);
+                fretboardCtrl.registerAllNotesModelUpdateFn(updateModel);
 
                 function getFn() {
                     return fretboardCtrl.jQueryFretboardApi.getAllNotes();
@@ -402,11 +399,11 @@
             var ngModelCtrl = ctrls[0];
             var fretboardCtrl = ctrls[1];
 
-            var scheduleModelUpdate = dataBindingHelper
+            var updateModel = dataBindingHelper
                 .bind(ngModelCtrl, getFn, setFn, true)
-                .scheduleModelUpdate;
+                .updateModel;
 
-            fretboardCtrl.registerClickedNotesModelUpdateFn(scheduleModelUpdate);
+            fretboardCtrl.registerClickedNotesModelUpdateFn(updateModel);
 
             function getFn() {
                 return fretboardCtrl.jQueryFretboardApi.getClickedNotes();
