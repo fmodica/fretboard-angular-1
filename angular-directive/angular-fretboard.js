@@ -108,24 +108,10 @@
             var modelUpdateIsScheduled = false;
             var ctrl = $scope.ctrl = this;
 
-            $scope.$on('$destroy', destroy);
+            initFretboard();
 
             ctrl.registerClickedNotesModelUpdateFn = function (_updateClickedNotesModel) {
                 updateClickedNotesModel = _updateClickedNotesModel;
-
-                var configCopy = angular.copy($scope.config);
-                var originalNotesClickedCallback = configCopy.notesClickedCallback;
-
-                // The plugin gets a function which updates the model, so that can happen before
-                // the original callback is invoked.
-                configCopy.notesClickedCallback = updateClickedNotesModel;
-
-                // The original callback gets invoked with ng-change after clicked notes have been
-                // updated on the model. 
-                ctrl.onClickedNotesUpdated = originalNotesClickedCallback;
-
-                $element.fretboard(configCopy);
-                ctrl.jQueryFretboardApi = $element.data('api');
             };
 
             ctrl.registerAllNotesModelUpdateFn = function (_updateAllNotesModel) {
@@ -144,11 +130,27 @@
                 });
             }
 
-            function destroy() {
-                if (ctrl.jQueryFretboardApi) {
-                    ctrl.jQueryFretboardApi.destroy();
-                    ctrl.jQueryFretboardApi = null;
+            $scope.$on('$destroy', function destroy() {
+                ctrl.api.destroy();
+                ctrl.api = null;
+            });
+
+            function initFretboard() {
+                var configCopy = angular.copy($scope.config);
+                var originalNotesClickedCallback = configCopy.notesClickedCallback;
+
+                // The plugin gets a function which updates the model, so that can happen before
+                // the original callback is invoked.
+                configCopy.notesClickedCallback = function () {
+                    updateClickedNotesModel();
                 }
+
+                // The original callback gets invoked with ng-change after clicked notes have been
+                // updated on the model. 
+                ctrl.onClickedNotesUpdated = originalNotesClickedCallback;
+
+                $element.fretboard(configCopy);
+                ctrl.api = $element.data('api');
             }
         }
     }
@@ -164,11 +166,11 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getTuning();
+                    return fretboardCtrl.api.getTuning();
                 }
 
                 function setFn(model) {
-                    fretboardCtrl.jQueryFretboardApi.setTuning(model);
+                    fretboardCtrl.api.setTuning(model);
                     fretboardCtrl.onNotesChanged();
                 }
             }
@@ -186,11 +188,11 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getNumFrets();
+                    return fretboardCtrl.api.getNumFrets();
                 }
 
                 function setFn(model) {
-                    fretboardCtrl.jQueryFretboardApi.setNumFrets(model);
+                    fretboardCtrl.api.setNumFrets(model);
                     fretboardCtrl.onNotesChanged();
                 }
             }
@@ -208,11 +210,11 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getChordMode();
+                    return fretboardCtrl.api.getChordMode();
                 }
 
                 function setFn(model) {
-                    fretboardCtrl.jQueryFretboardApi.setChordMode(model);
+                    fretboardCtrl.api.setChordMode(model);
                 }
             }
         };
@@ -229,11 +231,11 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getNoteClickingDisabled();
+                    return fretboardCtrl.api.getNoteClickingDisabled();
                 }
 
                 function setFn(model) {
-                    return fretboardCtrl.jQueryFretboardApi.setNoteClickingDisabled(model);
+                    return fretboardCtrl.api.setNoteClickingDisabled(model);
                 }
             }
         };
@@ -250,11 +252,11 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getNoteMode();
+                    return fretboardCtrl.api.getNoteMode();
                 }
 
                 function setFn(model) {
-                    fretboardCtrl.jQueryFretboardApi.setNoteMode(model);
+                    fretboardCtrl.api.setNoteMode(model);
                 }
             }
         };
@@ -271,7 +273,7 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getIntervals();
+                    return fretboardCtrl.api.getIntervals();
                 }
             }
         };
@@ -288,11 +290,11 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn, setFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getRoot();
+                    return fretboardCtrl.api.getRoot();
                 }
 
                 function setFn(model) {
-                    fretboardCtrl.jQueryFretboardApi.setRoot(model);
+                    fretboardCtrl.api.setRoot(model);
                     fretboardCtrl.onNotesChanged();
                 }
             }
@@ -310,7 +312,7 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getAnimationSpeed();
+                    return fretboardCtrl.api.getAnimationSpeed();
                 }
             }
         };
@@ -327,7 +329,7 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getNoteLetters();
+                    return fretboardCtrl.api.getNoteLetters();
                 }
             }
         };
@@ -344,7 +346,7 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getNoteCircles();
+                    return fretboardCtrl.api.getNoteCircles();
                 }
             }
         };
@@ -361,7 +363,7 @@
                 dataBindingHelper.bind(ngModelCtrl, getFn);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getDimensionsFunc();
+                    return fretboardCtrl.api.getDimensionsFunc();
                 }
             }
         };
@@ -382,7 +384,7 @@
                 fretboardCtrl.registerAllNotesModelUpdateFn(updateModel);
 
                 function getFn() {
-                    return fretboardCtrl.jQueryFretboardApi.getAllNotes();
+                    return fretboardCtrl.api.getAllNotes();
                 }
             }
         };
@@ -406,12 +408,12 @@
             fretboardCtrl.registerClickedNotesModelUpdateFn(updateModel);
 
             function getFn() {
-                return fretboardCtrl.jQueryFretboardApi.getClickedNotes();
+                return fretboardCtrl.api.getClickedNotes();
             }
 
             function setFn(model) {
-                fretboardCtrl.jQueryFretboardApi.clearClickedNotes();
-                fretboardCtrl.jQueryFretboardApi.setClickedNotes(model);
+                fretboardCtrl.api.clearClickedNotes();
+                fretboardCtrl.api.setClickedNotes(model);
                 fretboardCtrl.onNotesChanged();
             };
         }
