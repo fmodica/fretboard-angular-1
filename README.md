@@ -51,9 +51,9 @@ Learn more about <a target="_blank" href="https://github.com/fmodica/fretboard-a
 ## Tests
 Unit tests for can be run using the <a href="https://github.com/fmodica/fretboard-angular-1/tree/master/tests">Spec Runner</a>.
 
-## AngularJS 2 Component
+## Angular 2 Component
 
-If you are using Angular 2, the fretboard is also wrapped as an <a href="https://github.com/fmodica/fretboard-angular-2">Angular 2 component</a>.
+If you are using Angular 2, the fretboard is also wrapped as an <a href="https://github.com/fmodica/fretboard-angular">Angular 2 component</a>.
 
 ## Extra
 
