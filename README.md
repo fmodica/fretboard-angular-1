@@ -54,7 +54,3 @@ Unit tests for can be run using the <a href="https://github.com/fmodica/fretboar
 ## Angular 2 Component
 
 If you are using Angular 2, the fretboard is also wrapped as an <a href="https://github.com/fmodica/fretboard-angular">Angular 2 component</a>.
-
-## Extra
-
-You can also check out my <a target="_blank" href="http://frankmodica.net/voiceleader/index">Guitar Voiceleading Helper</a>, where I use the fretboard to help users create progressions with good voice leading.
