@@ -4,7 +4,7 @@ An Angular-1 directive which wraps the <a href="https://github.com/fmodica/fretb
 
 ## Demo
 
-Check out the <a href="http://frankmodica.azurewebsites.net/static/fretboarddemo/angular-1/index-with-full-config.html">demo fretboard (default styles)</a>, which shows the fretboard and the config updated in real time. Here is the same fretboard styled with a <a href="http://frankmodica.azurewebsites.net/static/fretboarddemo/angular-1/index-with-full-config-dark-theme.html" target="_blank">dark theme</a> using CSS.
+Check out the <a href="http://frankmodica.net/static/fretboarddemo/angular-1/index-with-full-config.html">demo fretboard (default styles)</a>, which shows the fretboard and the config updated in real time. Here is the same fretboard styled with a <a href="http://frankmodica.net/static/fretboarddemo/angular-1/index-with-full-config-dark-theme.html" target="_blank">dark theme</a> using CSS.
 
 ## Setup
 
@@ -57,4 +57,4 @@ If you are using Angular 2, the fretboard is also wrapped as an <a href="https:/
 
 ## Extra
 
-You can also check out my <a target="_blank" href="http://frankmodica.azurewebsites.net/voiceleader/index">Guitar Voiceleading Helper</a>, where I use the fretboard to help users create progressions with good voice leading.
+You can also check out my <a target="_blank" href="http://frankmodica.net/voiceleader/index">Guitar Voiceleading Helper</a>, where I use the fretboard to help users create progressions with good voice leading.
